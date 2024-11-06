@@ -61,7 +61,7 @@ export default function SignupPage() {
 
     // 모든 필드를 유효성 검사
     Object.keys(formData).forEach((key) => {
-      validateField(key, formData[key]); // 괄호를 확인하여 수정했습니다.
+      validateField(key, formData[key]);
       if (errors[key]) {
         hasError = true;
       }
@@ -95,7 +95,115 @@ export default function SignupPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      {/* 나머지 JSX 코드 */}
+      <header className="bg-primary text-primary-foreground py-4">
+        <div className="container mx-auto px-4">
+          <nav className="flex justify-between items-center">
+            <button onClick={() => navigate('/')} className="text-2xl font-bold">
+              Share Sports
+            </button>
+          </nav>
+        </div>
+      </header>
+
+      <main className="flex-grow container mx-auto px-4 py-8 flex items-center justify-center">
+        <div className="w-full max-w-md">
+          <h1 className="text-4xl font-bold text-center mb-8">회원가입</h1>
+          <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="id">
+                아이디
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="id"
+                type="text"
+                name="id"
+                placeholder="아이디 (6~15자)"
+                value={formData.id}
+                onChange={handleChange}
+              />
+              {errors.id && <p className="text-red-500 text-xs italic">{errors.id}</p>}
+            </div>
+            <div className="mb-4 relative">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
+                비밀번호
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline pr-10"
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                placeholder="비밀번호 (6~20자)"
+                value={formData.password}
+                onChange={handleChange}
+              />
+              <button
+                type="button"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5 mt-6"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff className="h-6 w-6 text-gray-700" /> : <Eye className="h-6 w-6 text-gray-700" />}
+              </button>
+              {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
+                비밀번호 확인
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="confirmPassword"
+                type="password"
+                name="confirmPassword"
+                placeholder="비밀번호 확인"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+              />
+              {errors.confirmPassword && <p className="text-red-500 text-xs italic">{errors.confirmPassword}</p>}
+            </div>
+            <div className="mb-6">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nickname">
+                닉네임
+              </label>
+              <input
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                id="nickname"
+                type="text"
+                name="nickname"
+                placeholder="닉네임 (2~10자)"
+                value={formData.nickname}
+                onChange={handleChange}
+              />
+              {errors.nickname && <p className="text-red-500 text-xs italic">{errors.nickname}</p>}
+            </div>
+            {errors.general && <p className="text-red-500 text-xs italic mb-4">{errors.general}</p>}
+            <div className="flex items-center justify-between">
+              <button
+                className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit"
+              >
+                회원가입
+              </button>
+              <a
+                className="inline-block align-baseline font-bold text-sm text-primary hover:text-primary-dark"
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  navigate('/login');
+                }}
+              >
+                이미 계정이 있으신가요?
+              </a>
+            </div>
+          </form>
+        </div>
+      </main>
+
+      <footer className="bg-muted py-4">
+        <div className="container mx-auto px-4 text-center text-muted-foreground">
+          &copy; 2023 풋살 매치. All rights reserved.
+        </div>
+      </footer>
     </div>
   );
 }
