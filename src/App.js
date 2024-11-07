@@ -6,6 +6,9 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
+import Replay from './pages/Replay'
+import Per_stat from './pages/Per_stat';
+import Details from './pages/Details'
 function App() {
   return (
     <div>
@@ -15,6 +18,9 @@ function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/search" element={<Search />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/replay" element={<Replay />} />
+        <Route path="/stat" element={<Per_stat />} />
+        <Route path="/details" element={<Details />} />
       </Routes>
     </div>
   );
