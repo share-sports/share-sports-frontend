@@ -1,10 +1,18 @@
-import React, { useState } from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { MapPin, Calendar, Users, Map, BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Main() {
   const navigate = useNavigate()
   const [currentEvent, setCurrentEvent] = useState(0)
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken')
+    setIsLoggedIn(!!accessToken)
+  }, [])
 
   const events = [
     { id: 1, title: '여름 풋살 대회', location: '서울시 강남구' },
@@ -20,6 +28,12 @@ export default function Main() {
     setCurrentEvent((prev) => (prev - 1 + events.length) % events.length)
   }
 
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken')
+    setIsLoggedIn(false)
+    navigate('/')
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <header className="bg-primary text-primary-foreground py-4">
@@ -29,20 +43,31 @@ export default function Main() {
               Share Sports
             </button>
             <div className="space-x-4">
-              <button onClick={() => navigate('/login')} className="hover:underline">
-                로그인
-              </button>
-              <button onClick={() => navigate('/signup')} className="hover:underline">
-                회원가입
-              </button>
+              {isLoggedIn ? (
+                <>
+                  <button onClick={() => navigate('/dashboard')} className="hover:underline">
+                    마이페이지
+                  </button>
+                  <button onClick={handleLogout} className="hover:underline">
+                    로그아웃
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button onClick={() => navigate('/login')} className="hover:underline">
+                    로그인
+                  </button>
+                  <button onClick={() => navigate('/signup')} className="hover:underline">
+                    회원가입
+                  </button>
+                </>
+              )}
             </div>
           </nav>
         </div>
       </header>
 
       <main className="flex-grow container mx-auto px-4 py-8">
-        {/* <h1 className="text-4xl font-bold text-center mb-8">풋살의 모든 것</h1> */}
-
         <div className="relative mb-8">
           <input
             type="text"
@@ -67,7 +92,7 @@ export default function Main() {
             <Users className="w-12 h-12 mb-4 text-primary" />
             <span className="text-lg font-semibold">팀 매칭</span>
           </button>
-          <button // 현재 주변 구장 기능(/map) 대신 구장 리스트 띄움(/search)
+          <button
             onClick={() => navigate('/search')}
             className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
@@ -117,8 +142,9 @@ export default function Main() {
                 <button
                   key={index}
                   onClick={() => setCurrentEvent(index)}
-                  className={`w-3 h-3 rounded-full mx-1 ${index === currentEvent ? 'bg-primary' : 'bg-gray-300'
-                    }`}
+                  className={`w-3 h-3 rounded-full mx-1 ${
+                    index === currentEvent ? 'bg-primary' : 'bg-gray-300'
+                  }`}
                 />
               ))}
             </div>

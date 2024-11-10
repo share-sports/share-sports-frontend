@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Search } from 'lucide-react';
-
+import Kakao from '../components/Kakao';
 // 샘플 데이터
 const sampleFields = [
   { id: 1, name: 'A 구장', address: '서울시 강남구 역삼동 123', price: 50000 },
@@ -10,6 +10,8 @@ const sampleFields = [
   { id: 4, name: 'D 구장', address: '서울시 마포구 합정동 101', price: 40000 },
   { id: 5, name: 'E 구장', address: '서울시 영등포구 여의도동 202', price: 60000 },
 ];
+
+
 
 export default function FieldBooking() {
   const navigate = useNavigate();
@@ -60,7 +62,8 @@ export default function FieldBooking() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="h-[600px] bg-gray-200 flex items-center justify-center rounded-lg">
-            <span className="text-gray-500">지도 컴포넌트</span>
+            {/* <span className="text-gray-500">지도 컴포넌트</span> */}
+            <Kakao />
           </div>
           <div className="space-y-4 max-h-[600px] overflow-y-auto">
             {fields.map((field) => (
