@@ -8,7 +8,8 @@ import Search from './pages/Search';
 import Dashboard from './pages/Dashboard';
 import Replay from './pages/Replay'
 import Per_stat from './pages/Per_stat';
-import Details from './pages/Details'
+import Details from './pages/Details';
+import Guide from './pages/Guide'
 function App() {
   return (
     <div>
@@ -21,6 +22,7 @@ function App() {
         <Route path="/replay" element={<Replay />} />
         <Route path="/stat" element={<Per_stat />} />
         <Route path="/details" element={<Details />} />
+        <Route path="/guide" element={<Guide />} />
       </Routes>
     </div>
   );

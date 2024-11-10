@@ -1,28 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header'; // Header 컴포넌트 임포트
 
 export default function Dashboard() {
   const navigate = useNavigate();
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center">
-            <button onClick={() => navigate('/')} className="text-2xl font-bold">
-              Share Sports
-            </button>
-            <div className="space-x-4">
-              <button onClick={() => navigate('/profile')} className="hover:underline">
-                프로필
-              </button>
-              <button onClick={() => navigate('/logout')} className="hover:underline">
-                로그아웃
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header /> {/* Header 컴포넌트 사용 */}
 
       <main className="flex-grow container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">대시보드</h1>

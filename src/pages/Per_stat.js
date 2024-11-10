@@ -1,6 +1,21 @@
+'use client';
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import Header from '../components/Header'; // Header 컴포넌트 임포트
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 // Mock data for demonstration
 const goalData = [
@@ -34,26 +49,7 @@ export default function PersonalStatsPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center">
-            <button onClick={() => navigate('/')} className="text-2xl font-bold">
-              Share Sports
-            </button>
-            <div className="space-x-4">
-              <button onClick={() => navigate('/dashboard')} className="hover:underline">
-                대시보드
-              </button>
-              <button onClick={() => navigate('/profile')} className="hover:underline">
-                프로필
-              </button>
-              <button onClick={() => navigate('/logout')} className="hover:underline">
-                로그아웃
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header /> {/* Header 컴포넌트 사용 */}
 
       <main className="flex-grow container mx-auto p-4">
         <h1 className="text-3xl font-bold mb-6">Personal Statistics</h1>
@@ -74,13 +70,7 @@ export default function PersonalStatsPage() {
             <p className="text-xs text-muted-foreground">+2 from last season</p>
           </div>
         </div>
-        
-        {/* <div className="mb-4">
-          <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded" onClick={() => navigate('/goals')}>Goals</button>
-          <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded" onClick={() => navigate('/winrate')}>Win Rate</button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={() => navigate('/mvp')}>MVP Awards</button>
-        </div> */}
-        
+
         <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
           <h2 className="text-xl font-semibold">Goal Statistics</h2>
           <p className="text-sm text-muted-foreground mb-4">Your goal scoring performance over the past 6 months</p>
@@ -95,7 +85,7 @@ export default function PersonalStatsPage() {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        
+
         <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
           <h2 className="text-xl font-semibold">Win Rate</h2>
           <p className="text-sm text-muted-foreground mb-4">Your match results distribution</p>
@@ -119,7 +109,7 @@ export default function PersonalStatsPage() {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        
+
         <div className="border border-gray-300 rounded p-4 bg-white shadow">
           <h2 className="text-xl font-semibold">MVP Awards</h2>
           <p className="text-sm text-muted-foreground mb-4">Your MVP award count over the past 6 months</p>
