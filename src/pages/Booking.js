@@ -1,48 +1,112 @@
-"use client";
+import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
+import Header from "../components/Header";
 
-import { useEffect, useState } from "react";
-
-export default function Component() {
+export default function Booking() {
+  const location = useLocation();
   const [date, setDate] = useState(new Date());
   const [timeRange, setTimeRange] = useState({ start: 9, end: 11 });
   const [reservations, setReservations] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [businessHours, setBusinessHours] = useState({ start: 9, end: 21 });
 
-  // 영업시간 설정
-  const BUSINESS_START = 9;
-  const BUSINESS_END = 21;
-  const HOUR_WIDTH = 100 / (BUSINESS_END - BUSINESS_START);
+  const stadiumUuid = new URLSearchParams(location.search).get("stadiumUuid");
+  const openingHours = new URLSearchParams(location.search).get("openingHours");
+  const closingHours = new URLSearchParams(location.search).get("closingHours");
 
   useEffect(() => {
-    const fetchReservations = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const formattedDate = date.toISOString().split("T")[0];
-        const response = await fetch(
-          `http://localhost:25565/api/reservation/stadium?stadiumUuid=684651d2&date=${formattedDate}`
-        );
+    setDate(new Date());
+  }, []);
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch reservations");
-        }
+  useEffect(() => {
+    if (openingHours && closingHours) {
+      const start = parseInt(openingHours.split(":")[0]);
+      const end = parseInt(closingHours.split(":")[0]);
+      setBusinessHours({ start, end });
+      setTimeRange({ start, end: start + 2 });
+    }
+  }, [openingHours, closingHours]);
 
-        const data = await response.json();
-        if (data.isSuccess) {
-          setReservations(data.result);
-        } else {
-          throw new Error(data.message);
+  useEffect(() => {
+    if (stadiumUuid && date) {
+      fetchReservations();
+    }
+  }, [stadiumUuid, date]);
+
+  const fetchReservations = async () => {
+    const formattedDate = date.toLocaleDateString("en-CA"); // yyyy-MM-dd 형식으로 변환
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      const response = await fetch(
+        `http://localhost:25565/api/reservation/stadium?stadiumUuid=${stadiumUuid}&date=${formattedDate}`,
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
         }
-      } catch (err) {
-        setError(err.message || "An error occurred");
-      } finally {
-        setIsLoading(false);
+      );
+
+      const data = await response.json();
+      if (data.isSuccess) {
+        setReservations(data.result);
+      } else {
+        console.error("Failed to fetch reservations:", data.message);
       }
+    } catch (error) {
+      console.error("Error fetching reservations:", error);
+    }
+  };
+
+  const handleBooking = async () => {
+    const startTime = new Date(date);
+    startTime.setHours(timeRange.start, 0, 0, 0);
+    const endTime = new Date(date);
+    endTime.setHours(timeRange.end, 0, 0, 0);
+
+    const formatDate = date => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      return `${year}-${month}-${day}:${hours}:${minutes}`;
     };
 
-    fetchReservations();
-  }, [date]);
+    const requestBody = {
+      stadiumUuid,
+      startTime: formatDate(startTime),
+      endTime: formatDate(endTime),
+    };
+
+    const accessToken = localStorage.getItem("accessToken");
+
+    try {
+      const response = await fetch(
+        "http://localhost:25565/api/reservation/reserve",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("예약 실패");
+      }
+
+      const data = await response.json();
+      alert("예약이 성공적으로 완료되었습니다!");
+      fetchReservations();
+    } catch (error) {
+      alert("예약에 실패했습니다.");
+      console.error("Error during booking:", error);
+    }
+  };
+
+  const HOUR_WIDTH = 100 / (businessHours.end - businessHours.start);
 
   const handleRangeChange = e => {
     const bounds = e.currentTarget.getBoundingClientRect();
@@ -50,11 +114,12 @@ export default function Component() {
     const percent = (x / bounds.width) * 100;
     const hour = Math.min(
       Math.max(
-        Math.round((percent / 100) * (BUSINESS_END - BUSINESS_START)) +
-          BUSINESS_START,
-        BUSINESS_START
+        Math.round(
+          (percent / 100) * (businessHours.end - businessHours.start)
+        ) + businessHours.start,
+        businessHours.start
       ),
-      BUSINESS_END
+      businessHours.end
     );
 
     const isReserved = reservations.some(reservation => {
@@ -69,133 +134,117 @@ export default function Component() {
     const distToEnd = Math.abs(hour - timeRange.end);
 
     if (distToStart < distToEnd) {
-      setTimeRange(prev => ({ ...prev, start: Math.min(hour, prev.end - 1) }));
+      setTimeRange(prev => ({
+        ...prev,
+        start: Math.min(hour, prev.end - 1),
+      }));
     } else {
-      setTimeRange(prev => ({ ...prev, end: Math.max(hour, prev.start + 1) }));
+      setTimeRange(prev => ({
+        ...prev,
+        end: Math.max(hour, prev.start + 1),
+      }));
     }
   };
 
-  const renderReservedSlots = () => {
-    return reservations.map((reservation, index) => {
-      const startHour = new Date(reservation.startTime).getHours();
-      const endHour = new Date(reservation.endTime).getHours();
-      return (
-        <div
-          key={index}
-          className="absolute h-full bg-red-200 opacity-50"
-          style={{
-            left: `${(startHour - BUSINESS_START) * HOUR_WIDTH}%`,
-            width: `${(endHour - startHour) * HOUR_WIDTH}%`,
-          }}
-        />
-      );
-    });
+  const formatTime = dateString => {
+    const date = new Date(dateString);
+    return `${date.getHours().toString().padStart(2, "0")}:00`;
   };
 
   return (
-    <div className="min-h-screen flex flex-col p-4">
-      <div className="bg-white rounded-lg shadow-md flex-grow flex flex-col">
-        <div className="p-6 flex flex-col h-full">
-          <div className="flex-grow flex flex-col gap-8">
-            <div>
-              <label className="text-2xl font-semibold mb-4 block">
-                날짜 선택
-              </label>
-              <input
-                type="date"
-                value={date.toISOString().split("T")[0]}
-                onChange={e => setDate(new Date(e.target.value))}
-                className="w-full max-w-sm border rounded-md p-2"
-              />
-            </div>
+    <div className="min-h-screen flex flex-col p-4 bg-gray-100">
+      <Header />
+      <h1 className="text-3xl font-semibold mb-6 text-center">예약 페이지</h1>
+      <div className="bg-white rounded-lg shadow-md p-6 w-full max-w-4xl mx-auto flex-grow">
+        <p className="mb-4">Stadium UUID: {stadiumUuid}</p>
+        <div className="mb-6">
+          <label className="text-xl font-semibold mb-2 block">날짜 선택</label>
+          <input
+            type="date"
+            value={date.toLocaleDateString("en-CA")}
+            onChange={e => setDate(new Date(e.target.value))}
+            className="w-full border rounded-md p-2 text-lg"
+          />
+        </div>
 
-            {isLoading ? (
-              <div className="text-center">Loading...</div>
-            ) : error ? (
-              <div className="text-red-500 text-center">{error}</div>
+        <div className="flex flex-col mb-6">
+          <label className="text-xl font-semibold mb-2">시간 선택</label>
+          <div
+            className="relative h-40 bg-gray-200 rounded-lg cursor-pointer"
+            onClick={handleRangeChange}
+          >
+            <div
+              className="absolute h-full bg-blue-300 rounded-lg"
+              style={{
+                left: `${
+                  (timeRange.start - businessHours.start) * HOUR_WIDTH
+                }%`,
+                width: `${(timeRange.end - timeRange.start) * HOUR_WIDTH}%`,
+              }}
+            />
+            {Array.from({
+              length: businessHours.end - businessHours.start + 1,
+            }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute h-full flex flex-col items-center justify-end pb-2"
+                style={{ left: `${i * HOUR_WIDTH}%` }}
+              >
+                <div className="h-full w-px bg-gray-400" />
+                <span className="text-sm mt-2">{`${
+                  i + businessHours.start
+                }:00`}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <p className="text-xl font-semibold">선택된 시간:</p>
+          <p className="text-lg">{`${timeRange.start}:00 - ${
+            timeRange.end
+          }:00 (${timeRange.end - timeRange.start}시간)`}</p>
+        </div>
+
+        <button
+          className="w-full bg-blue-500 text-white py-4 px-6 rounded-lg text-xl font-semibold hover:bg-blue-600 transition-colors mb-8"
+          onClick={handleBooking}
+        >
+          예약하기
+        </button>
+
+        <div className="mt-8">
+          <h2 className="text-2xl font-semibold mb-4">예약현황</h2>
+          <div className="space-y-4">
+            {reservations.length === 0 ? (
+              <p className="text-gray-500">현재 예약된 내역이 없습니다.</p>
             ) : (
-              <div className="flex flex-col">
-                <label className="text-2xl font-semibold mb-4 block">
-                  시간 선택
-                </label>
-                <div className="flex-grow flex flex-col">
-                  <div className="relative h-32">
-                    <div
-                      className="h-full bg-gray-100 rounded-lg relative cursor-pointer"
-                      onClick={handleRangeChange}
-                      role="slider"
-                      aria-valuemin={BUSINESS_START}
-                      aria-valuemax={BUSINESS_END}
-                      aria-valuenow={timeRange.start}
-                      aria-valuetext={`${timeRange.start}:00 to ${timeRange.end}:00`}
-                    >
-                      {renderReservedSlots()}
-                      <div
-                        className="absolute h-full bg-blue-200 rounded-lg transition-all"
-                        style={{
-                          left: `${
-                            (timeRange.start - BUSINESS_START) * HOUR_WIDTH
-                          }%`,
-                          width: `${
-                            (timeRange.end - timeRange.start) * HOUR_WIDTH
-                          }%`,
-                        }}
-                      />
-                      {Array.from({
-                        length: BUSINESS_END - BUSINESS_START + 1,
-                      }).map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute h-full flex flex-col items-center justify-end pb-2"
-                          style={{ left: `${i * HOUR_WIDTH}%` }}
-                        >
-                          <div className="h-full w-px bg-gray-300" />
-                          <span className="text-sm mt-2">{`${
-                            i + BUSINESS_START
-                          }:00`}</span>
-                        </div>
-                      ))}
-                      <div
-                        className="absolute top-0 h-full w-2 bg-blue-500 rounded cursor-ew-resize"
-                        style={{
-                          left: `${
-                            (timeRange.start - BUSINESS_START) * HOUR_WIDTH
-                          }%`,
-                        }}
-                      />
-                      <div
-                        className="absolute top-0 h-full w-2 bg-blue-500 rounded cursor-ew-resize"
-                        style={{
-                          left: `${
-                            (timeRange.end - BUSINESS_START) * HOUR_WIDTH
-                          }%`,
-                        }}
-                      />
+              reservations.map(reservation => (
+                <div
+                  key={reservation.reservationId}
+                  className="border rounded-lg p-4 hover:bg-gray-50"
+                >
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold">
+                        {formatTime(reservation.startTime)} -{" "}
+                        {formatTime(reservation.endTime)}
+                      </p>
+                      <p className="text-gray-600">
+                        예약번호: {reservation.reservationId}
+                      </p>
                     </div>
-                  </div>
-
-                  <div className="flex items-center gap-4 mt-4 text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">선택된 시간:</span>
+                    <div className="text-right">
+                      <p className="text-gray-600">{reservation.stadiumName}</p>
+                      <p className="text-sm text-gray-500">
+                        {reservation.stadiumAddress}
+                      </p>
                     </div>
-                    <span className="font-medium text-black text-lg">
-                      {timeRange.start}:00 - {timeRange.end}:00 (
-                      {timeRange.end - timeRange.start}
-                      시간)
-                    </span>
                   </div>
                 </div>
-              </div>
+              ))
             )}
           </div>
-          <button
-            className="w-full mt-8 bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors"
-            onClick={() => {
-              console.log("Booking time:", { date, timeRange });
-            }}
-          >
-            예약하기
-          </button>
         </div>
       </div>
     </div>
