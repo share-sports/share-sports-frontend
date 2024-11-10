@@ -1,14 +1,15 @@
 // App.js
-import React from 'react';
-import { Routes, Route } from 'react-router-dom';
-import Main from './pages/Main';
-import Login from './pages/Login';
-import Signup from './pages/Signup';
-import Search from './pages/Search';
-import Dashboard from './pages/Dashboard';
-import Replay from './pages/Replay'
-import Per_stat from './pages/Per_stat';
-import Details from './pages/Details'
+import React from "react";
+import { Routes, Route } from "react-router-dom";
+import Main from "./pages/Main";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Search from "./pages/Search";
+import Dashboard from "./pages/Dashboard";
+import Replay from "./pages/Replay";
+import Per_stat from "./pages/Per_stat";
+import Details from "./pages/Details";
+import Booking from "./pages/Booking";
 function App() {
   return (
     <div>
@@ -21,6 +22,7 @@ function App() {
         <Route path="/replay" element={<Replay />} />
         <Route path="/stat" element={<Per_stat />} />
         <Route path="/details" element={<Details />} />
+        <Route path="/booking" element={<Booking />} />
       </Routes>
     </div>
   );
