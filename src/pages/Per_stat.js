@@ -1,6 +1,21 @@
-import React from 'react';
+'use client';
+
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import Header from '../components/Header';
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 
 // Mock data for demonstration
 const goalData = [
@@ -29,115 +44,162 @@ const mvpData = [
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28'];
 
-export default function PersonalStatsPage() {
+export default function Dashboard() {
   const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState('dashboard');
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center">
-            <button onClick={() => navigate('/')} className="text-2xl font-bold">
-              Share Sports
-            </button>
-            <div className="space-x-4">
-              <button onClick={() => navigate('/dashboard')} className="hover:underline">
-                대시보드
-              </button>
-              <button onClick={() => navigate('/profile')} className="hover:underline">
-                프로필
-              </button>
-              <button onClick={() => navigate('/logout')} className="hover:underline">
-                로그아웃
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       <main className="flex-grow container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Personal Statistics</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="border border-gray-300 rounded p-4 bg-white shadow">
-            <h2 className="text-sm font-medium">Total Goals</h2>
-            <div className="text-2xl font-bold">27</div>
-            <p className="text-xs text-muted-foreground">+5 from last season</p>
-          </div>
-          <div className="border border-gray-300 rounded p-4 bg-white shadow">
-            <h2 className="text-sm font-medium">Win Rate</h2>
-            <div className="text-2xl font-bold">65.2%</div>
-            <p className="text-xs text-muted-foreground">+2.3% from last season</p>
-          </div>
-          <div className="border border-gray-300 rounded p-4 bg-white shadow">
-            <h2 className="text-sm font-medium">MVP Awards</h2>
-            <div className="text-2xl font-bold">5</div>
-            <p className="text-xs text-muted-foreground">+2 from last season</p>
-          </div>
-        </div>
-        
-        {/* <div className="mb-4">
-          <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded" onClick={() => navigate('/goals')}>Goals</button>
-          <button className="px-4 py-2 mr-2 bg-blue-500 text-white rounded" onClick={() => navigate('/winrate')}>Win Rate</button>
-          <button className="px-4 py-2 bg-blue-500 text-white rounded" onClick={() => navigate('/mvp')}>MVP Awards</button>
-        </div> */}
-        
-        <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
-          <h2 className="text-xl font-semibold">Goal Statistics</h2>
-          <p className="text-sm text-muted-foreground mb-4">Your goal scoring performance over the past 6 months</p>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={goalData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="goals" fill="#8884d8" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
-          <h2 className="text-xl font-semibold">Win Rate</h2>
-          <p className="text-sm text-muted-foreground mb-4">Your match results distribution</p>
-          <ResponsiveContainer width="100%" height={300}>
-            <PieChart>
-              <Pie
-                data={winRateData}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                outerRadius={80}
-                fill="#8884d8"
-                dataKey="value"
-                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+        <div className="flex flex-col md:flex-row gap-6">
+          {/* Tabs with adjusted width */}
+          <div className="w-full md:w-48 space-y-4 border-r border-gray-200 pr-4">
+            <div className="flex flex-col h-full space-y-2">
+              <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`p-2 text-left ${activeTab === 'dashboard' ? 'font-bold text-primary' : 'text-gray-600'}`}
               >
-                {winRateData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <Tooltip />
-            </PieChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="border border-gray-300 rounded p-4 bg-white shadow">
-          <h2 className="text-xl font-semibold">MVP Awards</h2>
-          <p className="text-sm text-muted-foreground mb-4">Your MVP award count over the past 6 months</p>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={mvpData}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="mvps" fill="#82ca9d" />
-            </BarChart>
-          </ResponsiveContainer>
+                대시보드
+              </button>
+              <button
+                onClick={() => setActiveTab('stats')}
+                className={`p-2 text-left ${activeTab === 'stats' ? 'font-bold text-primary' : 'text-gray-600'}`}
+              >
+                나의 스탯
+              </button>
+              <button
+                onClick={() => setActiveTab('replay')}
+                className={`p-2 text-left ${activeTab === 'replay' ? 'font-bold text-primary' : 'text-gray-600'}`}
+              >
+                리플레이
+              </button>
+            </div>
+          </div>
+
+          {/* Tabs Content */}
+          <div className="flex-grow space-y-6">
+            {activeTab === 'dashboard' && (
+              <div className="space-y-6">
+                <h1 className="text-3xl font-bold">대시보드</h1>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-lg font-semibold">최근 예약</h2>
+                    <ul className="list-disc pl-5 mt-2">
+                      <li>A 구장 - 2023-05-15 14:00</li>
+                      <li>B 구장 - 2023-05-18 16:00</li>
+                      <li>C 구장 - 2023-05-20 10:00</li>
+                    </ul>
+                  </div>
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-lg font-semibold">내 전적</h2>
+                    <p>승: 10</p>
+                    <p>패: 5</p>
+                    <p>승률: 66.67%</p>
+                  </div>
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-lg font-semibold">득점 현황</h2>
+                    <p>총 득점: 25</p>
+                    <p>경기당 평균 득점: 1.67</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'stats' && (
+              <div>
+                <h1 className="text-3xl font-bold mb-6">나의 스탯</h1>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-sm font-medium">총 득점</h2>
+                    <div className="text-2xl font-bold">27</div>
+                    <p className="text-xs text-muted-foreground">지난 시즌보다 +5</p>
+                  </div>
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-sm font-medium">승률</h2>
+                    <div className="text-2xl font-bold">65.2%</div>
+                    <p className="text-xs text-muted-foreground">지난 시즌보다 +2.3%</p>
+                  </div>
+                  <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                    <h2 className="text-sm font-medium">MVP 횟수</h2>
+                    <div className="text-2xl font-bold">5</div>
+                    <p className="text-xs text-muted-foreground">지난 시즌보다 +2</p>
+                  </div>
+                </div>
+
+                <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
+                  <h2 className="text-xl font-semibold">득점 통계</h2>
+                  <p className="text-sm text-muted-foreground mb-4">최근 6개월 간의 득점 현황</p>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={goalData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="goals" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
+                  <h2 className="text-xl font-semibold">승률</h2>
+                  <p className="text-sm text-muted-foreground mb-4">경기 결과 분포</p>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <PieChart>
+                      <Pie
+                        data={winRateData}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                        label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                      >
+                        {winRateData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                  <h2 className="text-xl font-semibold">MVP 횟수</h2>
+                  <p className="text-sm text-muted-foreground mb-4">최근 6개월 간의 MVP 횟수</p>
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={mvpData}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="month" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Bar dataKey="mvps" fill="#82ca9d" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'replay' && (
+              <div>
+                <h1 className="text-3xl font-bold mb-6">리플레이</h1>
+                <div className="border border-gray-300 rounded p-4 bg-white shadow">
+                  <h2 className="text-lg font-semibold">경기 리플레이</h2>
+                  <p>이 섹션에 경기 리플레이 목록이나 영상을 표시할 수 있습니다.</p>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
 
-      <footer className="bg-muted py-4 mt-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
+      <footer className="bg-gray-100 py-4 mt-8">
+        <div className="container mx-auto px-4 text-center text-gray-600">
           &copy; 2023 풋살 매치. All rights reserved.
         </div>
       </footer>

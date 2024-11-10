@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Replay from "./pages/Replay";
 import Per_stat from "./pages/Per_stat";
 import Details from "./pages/Details";
+import Guide from "./pages/Guide";
 import Booking from "./pages/Booking";
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
         <Route path="/stat" element={<Per_stat />} />
         <Route path="/details" element={<Details />} />
         <Route path="/booking" element={<Booking />} />
+        <Route path="/guide" element={<Guide />} />
       </Routes>
     </div>
   );

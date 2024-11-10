@@ -1,37 +1,39 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Play, Pause, SkipBack, SkipForward } from "lucide-react";
+'use client';
 
-// Mock data for demonstration
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header'; // Header 컴포넌트 임포트
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+
 const matches = [
   {
     id: 1,
-    title: "Finals: Team A vs Team B",
-    date: "2024-05-15",
+    title: 'Finals: Team A vs Team B',
+    date: '2024-05-15',
     goals: [
-      { time: "23:15", player: "John Doe", team: "Team A" },
-      { time: "45:30", player: "Jane Smith", team: "Team B" },
-      { time: "78:45", player: "Mike Johnson", team: "Team A" },
+      { time: '23:15', player: 'John Doe', team: 'Team A' },
+      { time: '45:30', player: 'Jane Smith', team: 'Team B' },
+      { time: '78:45', player: 'Mike Johnson', team: 'Team A' },
     ],
   },
   {
     id: 2,
-    title: "Semifinals: Team C vs Team D",
-    date: "2024-05-08",
+    title: 'Semifinals: Team C vs Team D',
+    date: '2024-05-08',
     goals: [
-      { time: "12:20", player: "Sarah Brown", team: "Team C" },
-      { time: "67:10", player: "Tom Wilson", team: "Team D" },
+      { time: '12:20', player: 'Sarah Brown', team: 'Team C' },
+      { time: '67:10', player: 'Tom Wilson', team: 'Team D' },
     ],
   },
   {
     id: 3,
-    title: "Quarterfinals: Team E vs Team F",
-    date: "2024-05-01",
+    title: 'Quarterfinals: Team E vs Team F',
+    date: '2024-05-01',
     goals: [
-      { time: "34:55", player: "Chris Lee", team: "Team E" },
-      { time: "56:30", player: "Emma Davis", team: "Team F" },
-      { time: "89:15", player: "Alex Turner", team: "Team E" },
-      { time: "92:00", player: "Chris Lee", team: "Team E" },
+      { time: '34:55', player: 'Chris Lee', team: 'Team E' },
+      { time: '56:30', player: 'Emma Davis', team: 'Team F' },
+      { time: '89:15', player: 'Alex Turner', team: 'Team E' },
+      { time: '92:00', player: 'Chris Lee', team: 'Team E' },
     ],
   },
 ];
@@ -77,63 +79,29 @@ export default function Replay() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center">
-            <button onClick={() => navigate('/')} className="text-2xl font-bold">
-              Share Sports
-            </button>
-            <div className="space-x-4">
-              <button onClick={() => navigate('/dashboard')} className="hover:underline">
-                대시보드
-              </button>
-              <button onClick={() => navigate('/profile')} className="hover:underline">
-                프로필
-              </button>
-              <button onClick={() => navigate('/logout')} className="hover:underline">
-                로그아웃
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header /> {/* Header 컴포넌트 사용 */}
 
       <main className="flex-grow container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">Goal Replays</h1>
+        <h1 className="text-3xl font-bold mb-6">리플레이</h1>
         <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
           <div className="pb-2 mb-2 border-b">
             <h2 className="text-xl font-semibold">{selectedMatch.title}</h2>
             <p className="text-sm text-muted-foreground">Goal replays from {selectedMatch.date}</p>
           </div>
+
+          {/* Google Drive Video Player */}
           <div className="aspect-video bg-gray-800 mb-4 flex items-center justify-center">
-            <p className="text-white">Goal Replay Video Player</p>
+            <iframe
+              src="https://drive.google.com/file/d/1Ol1Kt1gqyTOs4TX6eb8JHnaVqam88U1S/preview"
+              width="100%"
+              height="100%"
+              allow="autoplay"
+              title="Goal Replay Video"
+              className="rounded-lg"
+            ></iframe>
           </div>
+
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <button onClick={handlePreviousGoal} disabled={currentGoalIndex === 0} className="p-2 border rounded">
-                <SkipBack className="h-4 w-4" />
-              </button>
-              <button onClick={togglePlayPause} className="p-2 border rounded">
-                {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              </button>
-              <button onClick={handleNextGoal} disabled={currentGoalIndex === selectedMatch.goals.length - 1} className="p-2 border rounded">
-                <SkipForward className="h-4 w-4" />
-              </button>
-            </div>
-            <input
-              type="range"
-              value={currentTime}
-              onChange={handleSeek}
-              max="10"
-              step="0.1"
-              className="w-full"
-            />
-            <div className="text-sm text-muted-foreground text-center">
-              {currentTime.toFixed(1)} / 10.0 seconds
-            </div>
-            <div className="text-center font-semibold">
-              Goal {currentGoalIndex + 1} of {selectedMatch.goals.length}
-            </div>
             <div className="text-center">
               {selectedMatch.goals[currentGoalIndex].player} ({selectedMatch.goals[currentGoalIndex].team}) - {selectedMatch.goals[currentGoalIndex].time}
             </div>

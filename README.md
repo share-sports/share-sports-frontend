@@ -6,6 +6,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 node.js : 20.13.1 \
 npm : 10.5.2
 
+## Install Node Module
+
+npm install
 
 ## Available Scripts
 

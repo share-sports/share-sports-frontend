@@ -1,48 +1,53 @@
-import React, { useState } from 'react'
-import { MapPin, Calendar, Users, Map, BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Header from '../components/Header';
+import { MapPin, Calendar, Users, BookOpen, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import event1 from '../assets/event1.jpg';
 
 export default function Main() {
-  const navigate = useNavigate()
-  const [currentEvent, setCurrentEvent] = useState(0)
+  const navigate = useNavigate();
+  const [currentEvent, setCurrentEvent] = useState(0);
+  const [showUnavailableModal, setShowUnavailableModal] = useState(false);
+  const [showLoginWarning, setShowLoginWarning] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const events = [
     { id: 1, title: '여름 풋살 대회', location: '서울시 강남구' },
     { id: 2, title: '초보자 풋살 교실', location: '서울시 마포구' },
-    { id: 3, title: '풋살 친선 경기', location: '서울시 송파구' },
-  ]
+    { id: 3, title: '풋살 친선 경기', location: '서울시 송파구' }
+  ];
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem('accessToken');
+    setIsLoggedIn(!!accessToken);
+  }, []);
 
   const nextEvent = () => {
-    setCurrentEvent((prev) => (prev + 1) % events.length)
-  }
+    setCurrentEvent((prev) => (prev + 1) % events.length);
+  };
 
   const prevEvent = () => {
-    setCurrentEvent((prev) => (prev - 1 + events.length) % events.length)
-  }
+    setCurrentEvent((prev) => (prev - 1 + events.length) % events.length);
+  };
+
+  const handleUnavailableFeature = () => {
+    setShowUnavailableModal(true);
+  };
+
+  const handleDashboardClick = () => {
+    if (isLoggedIn) {
+      navigate('/dashboard');
+    } else {
+      setShowLoginWarning(true);
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="bg-primary text-primary-foreground py-4">
-        <div className="container mx-auto px-4">
-          <nav className="flex justify-between items-center">
-            <button onClick={() => navigate('/')} className="text-2xl font-bold">
-              Share Sports
-            </button>
-            <div className="space-x-4">
-              <button onClick={() => navigate('/login')} className="hover:underline">
-                로그인
-              </button>
-              <button onClick={() => navigate('/signup')} className="hover:underline">
-                회원가입
-              </button>
-            </div>
-          </nav>
-        </div>
-      </header>
-
+      <Header />
       <main className="flex-grow container mx-auto px-4 py-8">
-        {/* <h1 className="text-4xl font-bold text-center mb-8">풋살의 모든 것</h1> */}
-
         <div className="relative mb-8">
           <input
             type="text"
@@ -54,29 +59,29 @@ export default function Main() {
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
           <button
-            onClick={() => navigate('/booking')}
-            className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            onClick={handleDashboardClick}
+            className="flex flex-col items-center p-6 h-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
             <Calendar className="w-12 h-12 mb-4 text-primary" />
-            <span className="text-lg font-semibold">구장 예약</span>
+            <span className="text-lg font-semibold">대시보드</span>
           </button>
           <button
-            onClick={() => navigate('/matching')}
-            className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            onClick={handleUnavailableFeature}
+            className="flex flex-col items-center p-6 h-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
             <Users className="w-12 h-12 mb-4 text-primary" />
             <span className="text-lg font-semibold">팀 매칭</span>
           </button>
-          <button // 현재 주변 구장 기능(/map) 대신 구장 리스트 띄움(/search)
+          <button
             onClick={() => navigate('/search')}
-            className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="flex flex-col items-center p-6 h-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
-            <Map className="w-12 h-12 mb-4 text-primary" />
+            <MapPin className="w-12 h-12 mb-4 text-primary" />
             <span className="text-lg font-semibold">주변 구장</span>
           </button>
           <button
             onClick={() => navigate('/guide')}
-            className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+            className="flex flex-col items-center p-6 h-auto bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
             <BookOpen className="w-12 h-12 mb-4 text-primary" />
             <span className="text-lg font-semibold">가이드</span>
@@ -88,7 +93,7 @@ export default function Main() {
           <div className="relative bg-white rounded-lg shadow-md overflow-hidden">
             <div className="h-96 bg-gray-200 relative">
               <img
-                src={`/placeholder.svg?height=384&width=768&text=${events[currentEvent].title}`}
+                src={event1}
                 alt={events[currentEvent].title}
                 className="w-full h-full object-cover"
               />
@@ -117,8 +122,9 @@ export default function Main() {
                 <button
                   key={index}
                   onClick={() => setCurrentEvent(index)}
-                  className={`w-3 h-3 rounded-full mx-1 ${index === currentEvent ? 'bg-primary' : 'bg-gray-300'
-                    }`}
+                  className={`w-3 h-3 rounded-full mx-1 ${
+                    index === currentEvent ? 'bg-primary' : 'bg-gray-300'
+                  }`}
                 />
               ))}
             </div>
@@ -126,11 +132,41 @@ export default function Main() {
         </div>
       </main>
 
-      <footer className="bg-muted py-4 mt-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          &copy; 2023 풋살 매치. All rights reserved.
+      {/* Unavailable Feature Modal */}
+      <dialog open={showUnavailableModal} className="rounded-lg p-6 max-w-md shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4">해당 기능은 아직 사용할 수 없습니다.</h2>
+        <p className="mb-6 text-gray-600">
+          현재 개발 중인 기능입니다. 곧 이용하실 수 있도록 준비 중이니 조금만 기다려 주세요!
+        </p>
+        <button
+          onClick={() => setShowUnavailableModal(false)}
+          className="bg-primary text-black px-6 py-2 rounded-md shadow-lg hover:bg-primary-dark"
+        >
+          닫기
+        </button>
+      </dialog>
+
+      {/* Login Warning Modal */}
+      <dialog open={showLoginWarning} className="rounded-lg p-6 max-w-md shadow-lg">
+        <h2 className="text-2xl font-semibold mb-4">로그인이 필요합니다</h2>
+        <p className="mb-6 text-gray-600">
+          대시보드는 로그인 후 사용할 수 있습니다. 로그인 페이지로 이동하시겠습니까?
+        </p>
+        <div className="flex justify-end space-x-2">
+          <button
+            onClick={() => setShowLoginWarning(false)}
+            className="px-4 py-2 rounded-md border border-gray-400 hover:bg-gray-100"
+          >
+            취소
+          </button>
+          <button
+            onClick={() => navigate('/login')}
+            className="bg-primary text-black px-6 py-2 rounded-md shadow-lg hover:bg-primary-dark"
+          >
+            로그인 페이지로 이동
+          </button>
         </div>
-      </footer>
+      </dialog>
     </div>
-  )
+  );
 }
