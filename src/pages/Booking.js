@@ -38,7 +38,7 @@ export default function Booking() {
 
     try {
       const response = await fetch(
-        `http://localhost:25565/api/reservation/stadium?stadiumUuid=${stadiumUuid}&date=${formattedDate}`,
+        `http://chaeseungji.iptime.org:25565/api/reservation/stadium?stadiumUuid=${stadiumUuid}&date=${formattedDate}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -82,7 +82,7 @@ export default function Booking() {
 
     try {
       const response = await fetch(
-        "http://localhost:25565/api/reservation/reserve",
+        "http://chaeseungji.iptime.org:25565/api/reservation/reserve",
         {
           method: "POST",
           headers: {

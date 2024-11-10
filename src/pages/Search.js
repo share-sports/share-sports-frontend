@@ -47,8 +47,8 @@ export default function FieldBooking() {
 
   const filteredFields = fields.filter(
     field =>
-      field.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      field.address.toLowerCase().includes(searchTerm.toLowerCase())
+      field.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      field.address?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
