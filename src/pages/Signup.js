@@ -5,17 +5,18 @@ import { Eye, EyeOff } from 'lucide-react';
 export default function SignupPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    id: '',
+    email: '',
     password: '',
-    confirmPassword: '',
-    nickname: '',
+    name: '',
+    birth: '',
+    role: 'MEMBER',
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({
-    id: '',
+    email: '',
     password: '',
-    confirmPassword: '',
-    nickname: '',
+    name: '',
+    birth: '',
     general: '',
   });
 
@@ -28,9 +29,9 @@ export default function SignupPage() {
   const validateField = (name, value) => {
     let error = '';
     switch (name) {
-      case 'id':
-        if (value.length < 6 || value.length > 15) {
-          error = '아이디는 6~15자여야 합니다.';
+      case 'email':
+        if (!/\S+@\S+\.\S+/.test(value)) {
+          error = '유효한 이메일 주소를 입력해주세요.';
         }
         break;
       case 'password':
@@ -38,14 +39,14 @@ export default function SignupPage() {
           error = '비밀번호는 6~20자여야 합니다.';
         }
         break;
-      case 'confirmPassword':
-        if (value !== formData.password) {
-          error = '비밀번호가 일치하지 않습니다.';
+      case 'name':
+        if (value.length < 2 || value.length > 10) {
+          error = '이름은 2~10자여야 합니다.';
         }
         break;
-      case 'nickname':
-        if (value.length < 2 || value.length > 10) {
-          error = '닉네임은 2~10자여야 합니다.';
+      case 'birth':
+        if (!value) {
+          error = '생년월일을 입력해주세요.';
         }
         break;
       default:
@@ -59,7 +60,6 @@ export default function SignupPage() {
     const newErrors = { ...errors };
     let hasError = false;
 
-    // 모든 필드를 유효성 검사
     Object.keys(formData).forEach((key) => {
       validateField(key, formData[key]);
       if (errors[key]) {
@@ -73,20 +73,21 @@ export default function SignupPage() {
     }
 
     try {
-      // 실제 회원가입 API 호출 로직
-      const response = await fetch('/api/signup', {
+      const response = await fetch('http://chaeseungji.iptime.org:25565/api/auth/sign-up', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          birth: new Date(formData.birth).toISOString(),
+        }),
       });
 
       if (!response.ok) {
         throw new Error('회원가입에 실패했습니다.');
       }
 
-      // 회원가입 성공 시 로그인 페이지로 이동
       navigate('/login');
     } catch (err) {
       setErrors((prev) => ({ ...prev, general: '회원가입에 실패했습니다. 다시 시도해주세요.' }));
@@ -110,19 +111,19 @@ export default function SignupPage() {
           <h1 className="text-4xl font-bold text-center mb-8">회원가입</h1>
           <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="id">
-                아이디
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
+                이메일
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="id"
-                type="text"
-                name="id"
-                placeholder="아이디 (6~15자)"
-                value={formData.id}
+                id="email"
+                type="email"
+                name="email"
+                placeholder="이메일"
+                value={formData.email}
                 onChange={handleChange}
               />
-              {errors.id && <p className="text-red-500 text-xs italic">{errors.id}</p>}
+              {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
             </div>
             <div className="mb-4 relative">
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
@@ -147,39 +148,38 @@ export default function SignupPage() {
               {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
-                비밀번호 확인
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+                이름
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="confirmPassword"
-                type="password"
-                name="confirmPassword"
-                placeholder="비밀번호 확인"
-                value={formData.confirmPassword}
+                id="name"
+                type="text"
+                name="name"
+                placeholder="이름 (2~10자)"
+                value={formData.name}
                 onChange={handleChange}
               />
-              {errors.confirmPassword && <p className="text-red-500 text-xs italic">{errors.confirmPassword}</p>}
+              {errors.name && <p className="text-red-500 text-xs italic">{errors.name}</p>}
             </div>
             <div className="mb-6">
-              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nickname">
-                닉네임
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="birth">
+                생년월일
               </label>
               <input
                 className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                id="nickname"
-                type="text"
-                name="nickname"
-                placeholder="닉네임 (2~10자)"
-                value={formData.nickname}
+                id="birth"
+                type="date"
+                name="birth"
+                value={formData.birth}
                 onChange={handleChange}
               />
-              {errors.nickname && <p className="text-red-500 text-xs italic">{errors.nickname}</p>}
+              {errors.birth && <p className="text-red-500 text-xs italic">{errors.birth}</p>}
             </div>
             {errors.general && <p className="text-red-500 text-xs italic mb-4">{errors.general}</p>}
             <div className="flex items-center justify-between">
               <button
-                className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
               >
                 회원가입

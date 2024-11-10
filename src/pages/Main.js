@@ -68,7 +68,7 @@ export default function Main() {
             <span className="text-lg font-semibold">팀 매칭</span>
           </button>
           <button // 현재 주변 구장 기능(/map) 대신 구장 리스트 띄움(/search)
-            onClick={() => navigate('/search')} 
+            onClick={() => navigate('/search')}
             className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
           >
             <Map className="w-12 h-12 mb-4 text-primary" />
@@ -117,9 +117,8 @@ export default function Main() {
                 <button
                   key={index}
                   onClick={() => setCurrentEvent(index)}
-                  className={`w-3 h-3 rounded-full mx-1 ${
-                    index === currentEvent ? 'bg-primary' : 'bg-gray-300'
-                  }`}
+                  className={`w-3 h-3 rounded-full mx-1 ${index === currentEvent ? 'bg-primary' : 'bg-gray-300'
+                    }`}
                 />
               ))}
             </div>

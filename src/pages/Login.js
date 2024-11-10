@@ -9,11 +9,10 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
 
-    // 프론트엔드 유효성 검사
     if (!email || !password) {
       setError('이메일과 비밀번호를 모두 입력해주세요.')
       return
@@ -25,8 +24,7 @@ export default function LoginPage() {
     }
 
     try {
-      // 여기에 실제 로그인 API 호출 로직이 들어갑니다.
-      const response = await fetch('/api/login', {
+      const response = await fetch('http://chaeseungji.iptime.org:25565/api/auth/sign-in', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -34,19 +32,16 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
-      if (!response.ok) {
-        throw new Error('로그인에 실패했습니다.')
-      }
-
       const data = await response.json()
-      // JWT 토큰 저장 (실제 구현 시 보안을 위해 httpOnly 쿠키 사용 권장)
-      localStorage.setItem('accessToken', data.accessToken)
-      localStorage.setItem('refreshToken', data.refreshToken)
 
-      // 로그인 성공 시 메인 페이지로 이동
-      navigate('/')
+      if (response.status === 200 && data.isSuccess) {
+        localStorage.setItem('accessToken', data.result.accessToken)
+        navigate('/')
+      } else {
+        setError(data.message || '로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
+      }
     } catch (err) {
-      setError('로그인에 실패했습니다. 이메일과 비밀번호를 확인해주세요.')
+      setError('로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.')
     }
   }
 
@@ -102,7 +97,7 @@ export default function LoginPage() {
             {error && <p className="text-red-500 text-xs italic mb-4">{error}</p>}
             <div className="flex items-center justify-between">
               <button
-                className="bg-primary hover:bg-primary-dark text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                className="bg-black hover:bg-gray-800 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                 type="submit"
               >
                 로그인
