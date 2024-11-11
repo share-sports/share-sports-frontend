@@ -176,9 +176,8 @@ export default function Booking() {
             <div
               className="absolute h-full bg-blue-300 rounded-lg"
               style={{
-                left: `${
-                  (timeRange.start - businessHours.start) * HOUR_WIDTH
-                }%`,
+                left: `${(timeRange.start - businessHours.start) * HOUR_WIDTH
+                  }%`,
                 width: `${(timeRange.end - timeRange.start) * HOUR_WIDTH}%`,
               }}
             />
@@ -191,9 +190,8 @@ export default function Booking() {
                 style={{ left: `${i * HOUR_WIDTH}%` }}
               >
                 <div className="h-full w-px bg-gray-400" />
-                <span className="text-sm mt-2">{`${
-                  i + businessHours.start
-                }:00`}</span>
+                <span className="text-sm mt-2">{`${i + businessHours.start
+                  }:00`}</span>
               </div>
             ))}
           </div>
@@ -201,9 +199,8 @@ export default function Booking() {
 
         <div className="mb-6">
           <p className="text-xl font-semibold">선택된 시간:</p>
-          <p className="text-lg">{`${timeRange.start}:00 - ${
-            timeRange.end
-          }:00 (${timeRange.end - timeRange.start}시간)`}</p>
+          <p className="text-lg">{`${timeRange.start}:00 - ${timeRange.end
+            }:00 (${timeRange.end - timeRange.start}시간)`}</p>
         </div>
 
         <button
@@ -221,7 +218,7 @@ export default function Booking() {
             ) : (
               reservations.map(reservation => (
                 <div
-                  key={reservation.reservationId}
+                  key={reservation.memberName}
                   className="border rounded-lg p-4 hover:bg-gray-50"
                 >
                   <div className="flex justify-between items-center">
@@ -231,7 +228,7 @@ export default function Booking() {
                         {formatTime(reservation.endTime)}
                       </p>
                       <p className="text-gray-600">
-                        예약번호: {reservation.reservationId}
+                        예약자: {reservation.memberName}
                       </p>
                     </div>
                     <div className="text-right">

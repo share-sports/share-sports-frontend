@@ -55,7 +55,7 @@ export default function StadiumDetailPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Header /> {/* Header 컴포넌트를 사용 */}
-      
+
       {/* 이미지 섹션 */}
       <div
         className="w-full h-96 bg-cover bg-center"
@@ -106,7 +106,7 @@ export default function StadiumDetailPage() {
               <p className="mt-4">대여 비용: {stadiumData.rentCost.toLocaleString()}원</p>
             </div>
             <div className="mt-6">
-              <button 
+              <button
                 className="w-full py-6 text-lg bg-primary text-primary-foreground rounded hover:bg-primary-dark flex items-center justify-center"
                 onClick={() => navigate(`/booking/${stadiumData.stadiumUuid}`)}
               >
