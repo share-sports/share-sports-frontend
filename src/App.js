@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Search from "./pages/Search";
 import Dashboard from "./pages/Dashboard";
+import MyPage from "./pages/MyPage";
 import Replay from "./pages/Replay";
 import Per_stat from "./pages/Per_stat";
 import Details from "./pages/Details";
@@ -25,6 +26,7 @@ function App() {
         <Route path="/details" element={<Details />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/guide" element={<Guide />} />
+        <Route path="/mypage" element={<MyPage />} />
       </Routes>
     </div>
   );

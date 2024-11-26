@@ -30,7 +30,7 @@ const Header = () => {
             {isLoggedIn ? (
               <>
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/mypage')}
                   className="hover:bg-primary-foreground hover:text-primary p-2"
                 >
                   마이페이지
