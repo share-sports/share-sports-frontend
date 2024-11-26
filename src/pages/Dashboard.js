@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
+import MatchResultsTable from '../components/MatchResultsTable';
 import {
   BarChart,
   Bar,
@@ -18,7 +19,6 @@ import {
 } from 'recharts';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 
-// Mock data for demonstration
 const goalData = [
   { month: 'Jan', goals: 3 },
   { month: 'Feb', goals: 5 },
@@ -118,6 +118,12 @@ export default function Dashboard() {
                 className={`p-2 text-left ${activeTab === 'replay' ? 'font-bold text-primary' : 'text-gray-600'}`}
               >
                 리플레이
+              </button>
+              <button
+                onClick={() => setActiveTab('results')}
+                className={`p-2 text-left ${activeTab === 'results' ? 'font-bold text-primary' : 'text-gray-600'}`}
+              >
+                경기 결과
               </button>
             </div>
           </div>
@@ -252,6 +258,13 @@ export default function Dashboard() {
                 </div>
               </div>
             )}
+
+            {activeTab === 'results' && (
+              <div>
+                <h1 className="text-3xl font-bold mb-6">경기 결과</h1>
+                <MatchResultsTable />
+              </div>
+            )}
           </div>
         </div>
       </main>
@@ -264,3 +277,4 @@ export default function Dashboard() {
     </div>
   );
 }
+

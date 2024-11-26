@@ -1,124 +1,131 @@
-'use client';
+import React, { useState, useEffect } from "react";
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header'; // Header 컴포넌트 임포트
-import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
+const ShareSportsReplay = () => {
+  const matches = [
+    {
+      id: 1,
+      title: "Finals: Team A vs Team B",
+      date: "2024-05-15",
+      score: { teamA: 2, teamB: 2 },
+      goals: [
+        { time: "05:23", team: "Team A", minute: 5 },
+        { time: "09:45", team: "Team B", minute: 9 },
+        { time: "13:67", team: "Team A", minute: 13 },
+        { time: "18:89", team: "Team B", minute: 18 },
+      ],
+    },
+  ];
 
-const matches = [
-  {
-    id: 1,
-    title: 'Finals: Team A vs Team B',
-    date: '2024-05-15',
-    goals: [
-      { time: '23:15', player: 'John Doe', team: 'Team A' },
-      { time: '45:30', player: 'Jane Smith', team: 'Team B' },
-      { time: '78:45', player: 'Mike Johnson', team: 'Team A' },
-    ],
-  },
-  {
-    id: 2,
-    title: 'Semifinals: Team C vs Team D',
-    date: '2024-05-08',
-    goals: [
-      { time: '12:20', player: 'Sarah Brown', team: 'Team C' },
-      { time: '67:10', player: 'Tom Wilson', team: 'Team D' },
-    ],
-  },
-  {
-    id: 3,
-    title: 'Quarterfinals: Team E vs Team F',
-    date: '2024-05-01',
-    goals: [
-      { time: '34:55', player: 'Chris Lee', team: 'Team E' },
-      { time: '56:30', player: 'Emma Davis', team: 'Team F' },
-      { time: '89:15', player: 'Alex Turner', team: 'Team E' },
-      { time: '92:00', player: 'Chris Lee', team: 'Team E' },
-    ],
-  },
-];
-
-export default function Replay() {
-  const navigate = useNavigate();
   const [selectedMatch, setSelectedMatch] = useState(matches[0]);
-  const [currentGoalIndex, setCurrentGoalIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
+  const [videoRef, setVideoRef] = useState(null);
 
-  const handleMatchChange = (matchId) => {
-    const match = matches.find((m) => m.id.toString() === matchId);
+  const handleSeekVideo = (time) => {
+    if (videoRef) {
+      const [minutes, seconds] = time.split(":").map(Number);
+      videoRef.currentTime = minutes * 60 + seconds;
+      videoRef.play();
+    }
+  };
+
+  const handleMatchChange = (e) => {
+    const match = matches.find((m) => m.id === Number(e.target.value));
     if (match) {
       setSelectedMatch(match);
-      setCurrentGoalIndex(0);
-      setCurrentTime(0);
-      setIsPlaying(false);
-    }
-  };
-
-  const togglePlayPause = () => {
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleSeek = (event) => {
-    setCurrentTime(parseFloat(event.target.value));
-  };
-
-  const handleNextGoal = () => {
-    if (currentGoalIndex < selectedMatch.goals.length - 1) {
-      setCurrentGoalIndex(currentGoalIndex + 1);
-      setCurrentTime(0);
-    }
-  };
-
-  const handlePreviousGoal = () => {
-    if (currentGoalIndex > 0) {
-      setCurrentGoalIndex(currentGoalIndex - 1);
-      setCurrentTime(0);
     }
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <Header /> {/* Header 컴포넌트 사용 */}
-
-      <main className="flex-grow container mx-auto p-4">
-        <h1 className="text-3xl font-bold mb-6">리플레이</h1>
-        <div className="border border-gray-300 rounded p-4 bg-white shadow mb-6">
-          <div className="pb-2 mb-2 border-b">
-            <h2 className="text-xl font-semibold">{selectedMatch.title}</h2>
-            <p className="text-sm text-muted-foreground">Goal replays from {selectedMatch.date}</p>
-          </div>
-
-          {/* Google Drive Video Player */}
-          <div className="aspect-video bg-gray-800 mb-4 flex items-center justify-center">
-            <iframe
-              src="https://drive.google.com/file/d/1Ol1Kt1gqyTOs4TX6eb8JHnaVqam88U1S/preview"
-              width="100%"
-              height="100%"
-              allow="autoplay"
-              title="Goal Replay Video"
-              className="rounded-lg"
-            ></iframe>
-          </div>
-
-          <div className="space-y-4">
-            <div className="text-center">
-              {selectedMatch.goals[currentGoalIndex].player} ({selectedMatch.goals[currentGoalIndex].team}) - {selectedMatch.goals[currentGoalIndex].time}
-            </div>
+    <div className="min-h-screen bg-gray-50">
+      <header className="border-b bg-white">
+        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
+          <h1 className="text-xl font-bold">Share Sports</h1>
+          <div className="flex gap-4">
+            <button className="text-sm">로그인</button>
+            <button className="text-sm">회원가입</button>
           </div>
         </div>
-        <div className="border border-gray-300 rounded p-4 bg-white shadow">
-          <div className="pb-2 mb-2 border-b">
-            <h2 className="text-xl font-semibold">Select Match</h2>
-            <p className="text-sm text-muted-foreground">Choose a match to watch goal replays</p>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6">리플레이</h2>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-2">{selectedMatch.title}</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Goal replays from {selectedMatch.date}
+          </p>
+
+          <div className="aspect-video bg-gray-900 mb-6 rounded-lg overflow-hidden">
+            <video
+              ref={(ref) => setVideoRef(ref)}
+              className="w-full h-full"
+              controls
+            >
+              <source
+                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+                type="video/mp4"
+              />
+              Your browser does not support the video tag.
+            </video>
           </div>
+
+          <div className="flex justify-center items-center gap-4 mb-8">
+            <div className="text-center">
+              <span className="text-2xl font-bold">
+                {selectedMatch.score.teamA}
+              </span>
+              <p className="text-sm">Team A</p>
+            </div>
+            <div className="text-xl font-bold">:</div>
+            <div className="text-center">
+              <span className="text-2xl font-bold">
+                {selectedMatch.score.teamB}
+              </span>
+              <p className="text-sm">Team B</p>
+            </div>
+          </div>
+
+          <div className="relative max-w-2xl mx-auto">
+            <div className="timeline-line absolute left-1/2 h-full w-[2px] bg-gray-300 transform -translate-x-1/2"></div>
+            {selectedMatch.goals.map((goal, index) => (
+              <div
+                key={index}
+                className="relative mb-8 timeline-item"
+                onClick={() => handleSeekVideo(goal.time)}
+              >
+                <div className="flex items-center">
+                  <div className="w-1/2 pr-8 text-right">
+                    {goal.team === "Team A" && (
+                      <div className="font-semibold">⚽ {goal.team}</div>
+                    )}
+                  </div>
+                  <div className="absolute left-1/2 transform -translate-x-1/2">
+                    <div className="w-16 h-8 bg-white border-2 border-blue-500 rounded-full flex items-center justify-center">
+                      {goal.time}
+                    </div>
+                  </div>
+                  <div className="w-1/2 pl-8">
+                    {goal.team === "Team B" && (
+                      <div className="font-semibold">{goal.team} ⚽</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-sm border p-6">
+          <h3 className="text-lg font-semibold mb-2">Select Match</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            Choose a match to watch goal replays
+          </p>
           <select
-            value={selectedMatch.id.toString()}
-            onChange={(e) => handleMatchChange(e.target.value)}
             className="w-full p-2 border rounded"
+            onChange={handleMatchChange}
           >
             {matches.map((match) => (
-              <option key={match.id} value={match.id.toString()}>
+              <option key={match.id} value={match.id}>
                 {match.title} - {match.date} ({match.goals.length} goals)
               </option>
             ))}
@@ -126,11 +133,13 @@ export default function Replay() {
         </div>
       </main>
 
-      <footer className="bg-muted py-4 mt-8">
-        <div className="container mx-auto px-4 text-center text-muted-foreground">
-          &copy; 2023 풋살 매치. All rights reserved.
+      <footer className="border-t mt-12 bg-white">
+        <div className="container mx-auto px-4 py-6 text-center text-sm text-gray-600">
+          © 2023 풋살 매치. All rights reserved.
         </div>
       </footer>
     </div>
   );
-}
+};
+
+export default ShareSportsReplay;

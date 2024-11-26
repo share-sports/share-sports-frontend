@@ -8,6 +8,7 @@ export default function Booking() {
   const [timeRange, setTimeRange] = useState({ start: 9, end: 11 });
   const [reservations, setReservations] = useState([]);
   const [businessHours, setBusinessHours] = useState({ start: 9, end: 21 });
+  const [inviteLink, setInviteLink] = useState("");
 
   const stadiumUuid = new URLSearchParams(location.search).get("stadiumUuid");
   const openingHours = new URLSearchParams(location.search).get("openingHours");
@@ -99,11 +100,23 @@ export default function Booking() {
 
       const data = await response.json();
       alert("예약이 성공적으로 완료되었습니다!");
+      generateInviteLink(data.result.reservationId); // 예약 후 초대 링크 생성
       fetchReservations();
     } catch (error) {
       alert("예약에 실패했습니다.");
       console.error("Error during booking:", error);
     }
+  };
+
+  const generateInviteLink = (reservationId) => {
+    const link = `${window.location.origin}/join?reservationId=${reservationId}`;
+    setInviteLink(link);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      alert("초대 링크가 복사되었습니다!");
+    });
   };
 
   const HOUR_WIDTH = 100 / (businessHours.end - businessHours.start);
@@ -176,8 +189,7 @@ export default function Booking() {
             <div
               className="absolute h-full bg-blue-300 rounded-lg"
               style={{
-                left: `${(timeRange.start - businessHours.start) * HOUR_WIDTH
-                  }%`,
+                left: `${(timeRange.start - businessHours.start) * HOUR_WIDTH}%`,
                 width: `${(timeRange.end - timeRange.start) * HOUR_WIDTH}%`,
               }}
             />
@@ -190,8 +202,7 @@ export default function Booking() {
                 style={{ left: `${i * HOUR_WIDTH}%` }}
               >
                 <div className="h-full w-px bg-gray-400" />
-                <span className="text-sm mt-2">{`${i + businessHours.start
-                  }:00`}</span>
+                <span className="text-sm mt-2">{`${i + businessHours.start}:00`}</span>
               </div>
             ))}
           </div>
@@ -199,8 +210,7 @@ export default function Booking() {
 
         <div className="mb-6">
           <p className="text-xl font-semibold">선택된 시간:</p>
-          <p className="text-lg">{`${timeRange.start}:00 - ${timeRange.end
-            }:00 (${timeRange.end - timeRange.start}시간)`}</p>
+          <p className="text-lg">{`${timeRange.start}:00 - ${timeRange.end}:00 (${timeRange.end - timeRange.start}시간)`}</p>
         </div>
 
         <button
@@ -209,6 +219,19 @@ export default function Booking() {
         >
           예약하기
         </button>
+
+        {inviteLink && (
+          <div className="mt-8 p-4 bg-green-100 rounded-lg">
+            <h2 className="text-xl font-semibold mb-2">초대 링크</h2>
+            <p className="mb-2">{inviteLink}</p>
+            <button
+              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600"
+              onClick={copyToClipboard}
+            >
+              링크 복사
+            </button>
+          </div>
+        )}
 
         <div className="mt-8">
           <h2 className="text-2xl font-semibold mb-4">예약현황</h2>
@@ -224,18 +247,13 @@ export default function Booking() {
                   <div className="flex justify-between items-center">
                     <div>
                       <p className="font-semibold">
-                        {formatTime(reservation.startTime)} -{" "}
-                        {formatTime(reservation.endTime)}
+                        {formatTime(reservation.startTime)} - {formatTime(reservation.endTime)}
                       </p>
-                      <p className="text-gray-600">
-                        예약자: {reservation.memberName}
-                      </p>
+                      <p className="text-gray-600">예약자: {reservation.memberName}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-gray-600">{reservation.stadiumName}</p>
-                      <p className="text-sm text-gray-500">
-                        {reservation.stadiumAddress}
-                      </p>
+                      <p className="text-sm text-gray-500">{reservation.stadiumAddress}</p>
                     </div>
                   </div>
                 </div>
